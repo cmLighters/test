@@ -43,7 +43,7 @@ def about():
 def jiewo():
     """Renders the jiewo page."""
     return render_template(
-        'jiewo.html',
+        'yanzheng.html',
         title='接我',
         time = datetime.now(),
         messages='接我班车验票页面'

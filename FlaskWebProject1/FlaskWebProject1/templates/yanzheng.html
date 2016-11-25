@@ -1,0 +1,320 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn" style="background:#fff;">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>接我</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="description" content="Description...">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link href="../static/content/jiewo.css" rel="stylesheet">
+</head>
+<body style="background:#fff;">
+<!--头部-标题-->
+<header>
+	<div id="ferry_header">
+			<a class="back" href="javascript:history.go(-1)"></a>
+			<div class="title">林萃桥—奥北科技园</div>
+			<a class="gomap" href="../static/content/go-map.png"></a>
+	</div>
+</header>
+<div class="ad_area">
+			<a href="https://www.baidu.com">
+				<img src="../static/content/ad.jpg">
+			</a>
+</div>
+<div id="ticketElec_info"> 
+	<div class="check_wap">
+		<span class="date">2016年11月25日</span>
+		<span class="num"><strong>1</strong>张</span>
+		<span class="colorwords coloring" id="ticketMark">
+		  	樟科
+		</span>
+        <input id="yzm_input" type="text" />
+
+		<div class="pag_wap">
+		   <div class="pag flying" id="pagClickPromotion" style="display:none;cursor:pointer;">
+			  <span class="fly_l"></span>
+			  <span class="fly_c"></span>
+			  <span class="fly_r"></span>
+		   </div>
+		   <!-- <span id="show_button_ferry" style="background-color:#CDCDCD;" class="back_link">已验票</span> -->
+		   <span class="back_link" id="show_button_ferry" style="background-color:#19B1A2;">分享有礼</span>
+	    </div>
+		<span class="timer">车票有效期倒计时<span id="timeLong"><strong>13:13</strong></span></span>
+	</div>
+</div>
+<!--弹框-->
+<div class="pop_wap" id="ferry_alert" style="display:none;">
+    <div class="popbox" id="popBox">
+        <div class="words" id="ferry_modal_msg"></div>
+        <div class="btns02" style="display:block;">
+        	<span class="btn_c" id="ferry_tishi_sure">确定</span>
+        </div>
+    </div>
+</div>
+<!-- 弹框 -->
+<div class="pop_pag" id="popPagPromotion" style="display: none;">
+	<div class="pag_box">
+		<span class="tit">恭喜你获得随机返现</span>
+		<span class="num"><strong>0</strong> 元</span>
+		<span class="tip">返现已存入余额，可用于支付票款</span>
+		<a class="look" href="http://www.baidu.com">查看余额 &gt;</a>
+		<span class="close" id="closeBtnPromotion" style="cursor:pointer;"></span>
+	</div>
+</div>
+<!-- Start 分享 -->
+<div class="pop_wap" id="popShare" style="display:none;">
+	<img class="pop_share" src="http://www.baidu.com">
+</div>
+<!-- End 分享 -->
+<input id="promotionUrl" type="hidden" value="">
+<input id="shareUrl" type="hidden" value="/ticket/lotteryShare/049b1c014bd7f46a45c9e91d8b12b18d.do">
+<input id="ferryLineId" type="hidden" value="3">
+<input id="ferryLineName" type="hidden" value="林萃桥—奥北科技园">
+<input id="ticketCount" type="hidden" value="1">
+<input id="isChecked" type="hidden" value="1">
+<input id="checkedTime" type="hidden" value="2016-11-25 09:37:40">
+<input id="invalidTime" type="hidden" value="1480039660">
+<input id="sysTime" type="hidden" value="1480038726623">
+<script src="../static/scripts/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="../static/scripts/jiewo/jweixin-1.0.0.js" type="text/javascript"></script>
+<script src="../static/scripts/jiewo/core-min.js" type="text/javascript"></script>
+<script src="../static/scripts/jiewo/sha1.js" type="text/javascript"></script>
+<script src="../static/scripts/jiewo/tmp.js" type="text/javascript"></script>
+<script>
+var goto_url='';
+var sysTime = parseInt($("#sysTime").val());//系统时间
+var timmer;
+$(function(){
+	deailTime(sysTime);
+	timmer = setInterval(function(){
+		sysTime = parseInt(sysTime)+parseFloat(1000);
+		deailTime(sysTime);
+    },1000);
+    function addNum(){
+		var n=$("#numArea").val();
+		var num= parseInt(n) + 1;
+		var ticketCount = $("#ticketCount").val();
+		var temp = parseFloat(ticketCount).toFixed(2)-parseFloat(num).toFixed(2);
+		if(temp < 0){
+			$("#numArea").val(ticketCount);
+			return;
+		};
+		$("#numArea").val(num);
+	};
+	function jianNum(){
+		var n=$("#numArea").val();
+		var num=parseInt(n)-1;
+		if(num==0){return;};
+		$("#numArea").val(num);
+	};	
+	$("#addBtn").click(addNum).dblclick(addNum);
+	$("#jianBtn").click(jianNum).dblclick(jianNum);	
+	
+});
+
+function checkNumArea(){
+	var n=$("#numArea").val();
+	var ticketCount = $("#ticketCount").val();
+	var temp = parseFloat(ticketCount).toFixed(2)-parseFloat(n).toFixed(2);
+	if(n < 1){
+		$("#numArea").val("1");
+		return;
+	}else if(temp < 0){
+		$("#numArea").val(ticketCount);
+	}
+};
+	
+function deailTime(sysTime){
+	var isChecked = $("#isChecked").val();//校验状态
+	var checkedTime = $("#checkedTime").val();//验票时间
+	var invalidTime = $("#invalidTime").val();//失效时间
+	if( null !=isChecked && '' != isChecked && '1' == isChecked){
+		//已经验票的，显示倒计时
+		var temp_sysTime = parseInt(sysTime/1000);
+		if (temp_sysTime > invalidTime) {//如果系统时间大于失效时间，表示票已失效
+			//$("#timeLong").hide();
+			//$("#timeLong").html('00:00');
+			$("#show_button_ferry").text("车票已失效");
+			$("#show_button_ferry").css({"background-color":"red"});
+			$("#ticketMark").attr("class","colorwords");
+			clearInterval(timmer);
+			return;
+		}else{
+			var detailTimeHtml = intervalTime(invalidTime, temp_sysTime);
+			$("#timeLong").html(detailTimeHtml);
+			$("#timeLong").show();
+		}
+	}
+}
+
+//计算和当前时间相差的具体时间：分秒标签
+function intervalTime(sysTime, nowTime) {
+	var temp1 = (sysTime - nowTime) / 60;// 相差秒数
+	var wrapMinite = parseInt(temp1 % 60);// 分钟
+	var wrapSe = parseInt((sysTime - nowTime) % 60);// 秒
+	var wrapMiao = (wrapSe <= 0) ? "00" : (wrapSe < 10 ? "0" + wrapSe + ""
+			: wrapSe + "");
+	var wrapFenzhon = (wrapMinite <= 0) ? "00" : (wrapMinite < 10 ? "0"
+			+ wrapMinite + "" : wrapMinite + "");
+	 tempWrap = '<strong>'+wrapFenzhon+':'+wrapMiao+'</strong>';
+	return tempWrap;
+}
+
+function changeButton(flag){
+	if( flag == true){
+		$("#checkFerryTicket").css({"background-color":"#A7D2CD"});
+		$('#checkFerryTicket').attr("disabled",true);
+	}else{
+		$("#checkFerryTicket").css({"background-color":"#19b1a2"});
+		$('#checkFerryTicket').attr("disabled",false);
+	}
+}
+$("#checkFerryTicket").click(function(e){
+	e.preventDefault();//阻止js默认事件
+	var ferryLineId=$("#ferryLineId").val();
+	var checkNum=$("#numArea").val();//验票张数
+	changeButton(true);
+	SzLibAPI.checkFerryTicket(ferryLineId,checkNum,function(data){
+		var	success = data.success;
+		var errorMsg = data.errorMsg;
+		$("#shareUrl").val(data.SHARE_URL);
+		if(success == true){
+			var ticketElec = data.ticketElec;
+			if( null == ticketElec || ticketElec.length != 0){
+				//页面转化
+				var info_html = '<div class="check_wap">'
+					+'<span class="date">'+ticketElec.CHECKED_DATE+'</span>'
+					+'<span class="num"><strong>'+ticketElec.TICKET_COUNT+'</strong>张</span>';
+					info_html += '<span id="ticketMark" class="colorwords coloring">';
+					info_html +=ticketElec.TICKET_MARK+'</span>'
+					+'<div class="pag_wap">';
+					if(data.IS_PROMOTION != undefined && data.IS_PROMOTION == true){
+						$("#promotionUrl").val(data.PROMOTION_URL);
+						info_html += '<div class="pag flying" id="pagClickPromotion" style="display:block;cursor:pointer;">';
+					}else{
+						info_html += '<div class="pag flying" id="pagClickPromotion" style="display:none;cursor:pointer;">';
+					}
+					info_html += '<span class="fly_l"></span>'
+					+'<span class="fly_c"></span>'
+					+'<span class="fly_r"></span>'
+					+'</div>'
+					+'<span id="show_button_ferry"  style="background-color:#19B1A2;cursor:pointer;" class="back_link">分享有礼</span>'
+					+'</div>'
+					+'<span class="timer">车票有效期倒计时<span id="timeLong"><strong>30:00</strong></span></span>'
+					+'</div>';
+				var header_html='<a class="back" href="javascript:history.go(-1)"></a>'
+				+'<div class="title">'+$("#ferryLineName").val()+'</div>'
+				+'<a class="gomap" href="http://web.jiewo.com/line/ferryLineMapInfo.do?ferryLineId='
+				+ferryLineId+'"></a>';
+				$("#ferry_header").html(header_html);
+				$("#ticketElec_info").html(info_html);
+				//倒计时处理
+				$("#isChecked").val('1');
+				$("#checkedTime").val(getVaule(data.checkedTime));
+				$("#invalidTime").val(getVaule(data.invalidTimeSeconds));
+				sysTime = getVaule(data.sysTimeSeconds);
+				$("#sysTime").val(sysTime);
+				$.getScript( "http://web.jiewo.com/webJs.jw?jsPath=weixin" );
+			}else{
+			 	window.location.href = "http://web.jiewo.com/ticket/auth_ferryTicketElec.do?ferryLineId="+ferryLineId;
+			}
+		}else{
+			if(errorMsg == '1'){
+				showConfirm("页面已过期，点击确定，刷新页面！","http://web.jiewo.com/ticket/auth_ferryTicketElec.do?ferryLineId="+ferryLineId);
+    		}else if(errorMsg == '2'){
+    			$("#ticketCountDiv").html("（余"+data.canCheckedTicket+"}张）");
+    		}else{
+    			alert("验票失败，请退出重试");
+    		}
+		}
+	});
+});
+
+$("#popShare").click(function(){
+	$(this).hide();
+});
+
+$(document).on("click","#show_button_ferry",function(e){
+	e.preventDefault();
+	$("#popShare").show();
+});
+
+$(document).on("click","#pagClickPromotion",function(e){
+	e.preventDefault();
+	var promotionUrl = $("#promotionUrl").val();
+	if(promotionUrl != undefined){
+		SzLibAPI.lotteryPromotion(promotionUrl,function(data){
+           var success = data.success;
+           if(success == true){
+              var money = data.promotionMoney == undefined ? 0 : data.promotionMoney;
+              $("#popPagPromotion span.num").html("<strong>"+money+"</strong> 元");
+          	  $("#popPagPromotion").fadeIn();
+        	  $(this).hide();
+           }
+	    });
+	}
+});
+$(document).on("click","#closeBtnPromotion",function(e){
+	e.preventDefault();
+	$("#popPagPromotion").fadeOut();
+	$("#pagClickPromotion").fadeOut();
+});
+
+$("#ferry_tishi_sure").click(function(e){
+	e.preventDefault();//阻止js默认事件
+	var ferryLineId=$("#ferryLineId").val();
+	if('' != goto_url){
+		window.location.href = goto_url;
+	}
+	$('#ferry_alert').hide();
+});
+
+$("#yzm_input").blur(function () {
+    $("#ticketMark").text($("#yzm_input").val());
+    $(this).hide();
+})
+//模态窗口，
+function showConfirm(msg,url){
+	goto_url = url;
+	$("#ferry_modal_msg").html(msg);
+	$('#ferry_alert').show();
+}
+
+function getVaule(Obj){
+	if( null == Obj || undefined == Obj){
+		return '';
+	}else{
+		return Obj;
+	}
+}
+function setNotice(obj){
+	SzLibAPI.setFerryTicketNotice(obj,function(data){
+		var success = data.success;
+   	    var errorMsg = data.errorMsg;
+	    if(success == true){
+	      	  $("#ticket_notice").hide();
+	    }else{
+      	  if(errorMsg == "login"){
+			window.location.href ="http://web.jiewo.com/member/login.do";
+	      }
+	      $("#ticket_notice").hide();
+	    }
+	});
+}
+
+//快轮广告
+function gotoAdver(mark){
+	if( mark == '快轮F0'){
+		window.location.href ="http://web.jiewo.com/adver.do?adUrl=http%3a%2f%2fz.m.jd.com%2fproject%2fdetails%2f56415.html&from=ferryTicketElec";
+	}else if(mark == '大拇哥'){
+		window.location.href ="http://web.jiewo.com/adver.do?adUrl=https%3a%2f%2fwww.dmgcf.com%2floads%3fcode%3d999988&from=ferryTicketElec";
+	}
+}
+</script>
+
+
+
+</body></html>

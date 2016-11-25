@@ -42,10 +42,17 @@
     <Folder Include="FlaskWebProject1\templates\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="FlaskWebProject1\static\content\ad.jpg" />
+    <Content Include="FlaskWebProject1\static\content\back_icon.png" />
+    <Content Include="FlaskWebProject1\static\content\go-map.png" />
     <Content Include="FlaskWebProject1\static\content\jiewo.css" />
+    <Content Include="FlaskWebProject1\static\scripts\jiewo\core-min.js" />
+    <Content Include="FlaskWebProject1\static\scripts\jiewo\jweixin-1.0.0.js" />
     <Content Include="FlaskWebProject1\static\scripts\jiewo\mobileSwipe.js" />
+    <Content Include="FlaskWebProject1\static\scripts\jiewo\sha1.js" />
     <Content Include="FlaskWebProject1\static\scripts\jiewo\tmp.js" />
     <Content Include="FlaskWebProject1\templates\jiewo.html" />
+    <Content Include="FlaskWebProject1\templates\yanzheng.html" />
     <Content Include="requirements.txt" />
     <Content Include="FlaskWebProject1\static\content\bootstrap.css" />
     <Content Include="FlaskWebProject1\static\content\bootstrap.min.css" />
